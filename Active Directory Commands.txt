@@ -1,0 +1,40 @@
+
+#Will import the module into your powershell session.
+
+Import-Module activedirectory 
+
+#Will get the ful list of syntax for New-ADUser cmdlet 
+#Get-Command New-ADUser –Syntax
+
+
+New-ADUser -Name "Cory Fielding" -GivenName "Cory" -Surname "Fielding" -SamAccountName "c.fielding" -UserPrincipalName "coryfielding@coryfielding.net" 
+-Path "OU=Users,DC=ad,DC=coryfielding,DC=net -AccountPassword(Read-Host -AsSecureString "Enter Password") -Enabled $true
+
+#Will ask user to enter password.
+
+
+#need to add any other user values full list here: https://docs.microsoft.com/en-us/powershell/module/addsadministration/new-aduser?view=win10-ps
+#using subexpressions
+$NewADUser = Import-Csv -Path 'C:\temp\ADusers.csv' 
+
+foreach ($ADUser in $NewADUser) {
+
+     $parameters = @{
+
+        Enabled = $true
+        ChangePasswordAtLogon = $true
+        Path = "OU=Users,DC=coryfielding,DC=net"
+
+        Name = "$($ADUser.First) $($ADUser.Last)"
+        UserPrincipalName = "$($ADUser.First).$($ADUser.Last)@fielding.net"
+        SamAccountName = "$($ADUser.First).$($ADUser.Last)"
+
+        GivenName = $ADUser.First
+        Surname = $ADUser.Last
+
+
+        AccountPassword = "P@ssw0rd" | ConvertTo-SecureString -AsPlainText -Force
+
+     }
+
+    New-ADUser @parameters
